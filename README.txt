@@ -1,20 +1,25 @@
 == Table of Contents ==
 
-I.   What is Ophal?
+I.   What is DBA?
 II.  Roadmap
 III. Configuration
 
 
-== I. What is Ophal? ==
+== I. What is DBA? ==
 
-The DBA module is intended to handle the administration of databases in Ophal.
-It started as a Lua port of phpMiniAdmin, within the Nutria project.
+The DBA module is intended to handle the administration of databases in
+Ophal[1]. This project started as a Lua port of phpMiniAdmin[2], within
+the Nutria[3] project.
+
+[1] http://ophal.org
+[2] http://phpminiadmin.sourceforge.net
+[3] http://gitorious.org/nutria
 
 
 == II. Roadmap ==
 
 1. Alpha
-  Port all functionality from phpMyAdmin.
+  Port all functionality from phpMiniAdmin.
 
 2. Beta
   ACL by role.
@@ -28,10 +33,20 @@ It started as a Lua port of phpMiniAdmin, within the Nutria project.
 
 == III. Configuration ==
 
-By default DBA has access to all databases configured in settings.lua. To
-allow access to a database from DBA just set the option 'dba' to true.
+1. Settings
+  In order to customize the option MAX_ROWS_PER_PAGE just add the
+  following to your settings.lua:
 
-Example:
+  settings.dba = {
+    MAX_ROWS_PER_PAGE = 100, -- default value: 50
+  }
+
+2. Database access
+  By default DBA has no access to databases configured in settings.lua.
+  In order to allow access to a database from DBA just set the option
+  'dba' to true.
+
+  Example:
 
   settings.db = {
     test = {

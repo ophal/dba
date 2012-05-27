@@ -1,0 +1,48 @@
+div#dba {
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 80%;
+  padding: 0px;
+  margin: 0px;
+}
+#dba div {
+  padding: 3px;
+}
+#dba .inv {
+  background-color: #006699;
+  color: #FFFFFF;
+}
+#dba .inv a {
+  color: #FFFFFF;
+}
+#dba table.res th, table.res td {
+  padding: 2px;
+}
+#dba table.res tr {
+  vertical-align: top;
+}
+#dba tr.e {
+  background-color: #CCCCCC;
+}
+#dba tr.o {
+  background-color: #EEEEEE;
+}
+#dba tr.h {
+  background-color: #9999CC;
+}
+#dba tr.s {
+  background-color: #FFFF99;
+}
+#dba .err {
+  color: #FF3333;
+  font-weight: bold;
+  text-align: center;
+}
+#dba .frm {
+  width: 400px;
+  border: 1px solid #999999;
+  background-color: #eeeeee;
+  text-align: left;
+}
+#dba .dot {
+  border-bottom: 1px dotted #000;
+}
