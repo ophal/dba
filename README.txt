@@ -34,12 +34,20 @@ the Nutria[3] project.
 == III. Configuration ==
 
 1. Settings
+  DBA module uses extra Seawolf and Lua libraries, you need to add them
+  manually to the sandbox in 'settings.lua', to do so just add following lines:
+
+  env.seawolf_text_preg = require [[seawolf.text.preg]]
+  env.microtime = seawolf.calendar.microtime
+  env.math = math
+
   In order to customize the option MAX_ROWS_PER_PAGE just add the
   following to your settings.lua:
 
   settings.dba = {
     MAX_ROWS_PER_PAGE = 100, -- default value: 50
   }
+
 
 2. Database access
   By default DBA has no access to databases configured in settings.lua.

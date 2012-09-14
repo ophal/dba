@@ -1,11 +1,16 @@
-function frefresh() {
-  var F = document.DF;
-  F.method = 'get';
-  F.refresh.value = "1";
-  F.submit();
-}
+(function ($) {
+
+$(document).ready(function() {
+  $('#dba_conn').change(function() {
+    var F = document.DF;
+    F.method = 'get';
+    F.refresh.value = "1";
+    F.submit();
+  });
+});
 
 function go(p,sql) {
+  alert(sql)
   var F = document.DF;
   F.p.value = p;
   if (sql) {
@@ -41,3 +46,5 @@ function tc(tr) {
 
 function after_load() {
 }
+  
+})(jQuery);

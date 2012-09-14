@@ -14,11 +14,12 @@ local debug, settings, unpack = debug, settings, unpack
 local tins, tcon, slen = table.insert, table.concat, string.len
 local trim, microtime = seawolf.text.trim, microtime
 local explode, substr = seawolf.text.explode, seawolf.text.substr
-local preg_match, strlen = seawolf.text.preg_match, string.len
-local preg_replace = seawolf.text.preg_replace
+local preg_match, strlen = seawolf_text_preg.match, string.len
+local preg_replace = seawolf_text_preg.replace
 local str_replace = seawolf.text.str_replace
 local htmlspecialchars = seawolf.text.htmlspecialchars
 local PREG_OFFSET_CAPTURE = 256
+local add_js = add_js
 
 module [[ophal.modules.dba]]
 
@@ -111,7 +112,7 @@ function get_conn_select(sel_)
     rawset(output, #output + 1, ([[<option value="%s"%s>%s (%s)</option>]]):format(k, (sel_ and sel_ == v.database) and [[selected]] or [[]], k, v.driver))
   end
 
-  return ([[<select name="conn" onChange="frefresh()"><option value=""> - none -</option>%s</select>]]):format(tcon(output))
+  return ([[<select name="conn" id="dba_conn"><option value=""> - none -</option>%s</select>]]):format(tcon(output))
 end
 
 --~ function get_db_select(sel_)
@@ -130,6 +131,7 @@ end
 
 function page_header()
   add_css [[modules/dba/dba.css]]
+  add_js [[misc/jquery.js]]
   add_js [[modules/dba/dba.js]]
 
   local output = {}
@@ -146,9 +148,10 @@ Connections: %s
 ]]):format(base_path, ophal.modules.dba.version, get_conn_select(db_conn), base_path))
 
   if not empty(db_conn) then
-    rawset(output, #output + 1, ([[
-|
-&#183;<a href="%s?conn=%s&query=show+databases">show databases</a>]]):format(self, db_conn))
+    -- TODO
+    --~ rawset(output, #output + 1, ([[
+--~ |
+--~ &#183;<a href="%s?conn=%s&query=show+databases">show databases</a>]]):format(self, db_conn))
   end
 
   if not empty(db_name) then
@@ -181,9 +184,9 @@ function page_select(sth, q)
   rc = {[[o]], [[e]]}
   sqldr = {}
 
-  is_shd = not empty(preg_match([[^show databases]], q, nil, nil, nil, [[i]]))
-  is_sht = not empty(preg_match([[^show tables]], q, nil, nil, nil, [[i]]))
-  is_show_crt = not empty(preg_match([[^show create table]], q, nil, nil, nil, [[i]]))
+  is_shd = not empty(preg_match([[^(show databases)]], q, nil, nil, nil, [[i]]))
+  is_sht = not empty(preg_match([[^(show tables)]], q, nil, nil, nil, [[i]]))
+  is_show_crt = not empty(preg_match([[^(show create table)]], q, nil, nil, nil, [[i]]))
 
   columns = sth:columns()
   --~ reccount = mysql_num_rows(sth) -- TODO
@@ -216,7 +219,7 @@ function page_select(sth, q)
     tins(headers, tcon{[[<th>]], v, [[</th>]]})
   end
   tins(headers, tcon{
-    --~ not empty(is_shd) and [[<th>show create database</th><th>show table status</th><th>show triggers</th>]] or [[]],
+    not empty(is_shd) and [[<th>show create database</th><th>show table status</th><th>show triggers</th>]] or [[]],
     not empty(is_sht) and [[<th>show create table</th><th>explain</th><th>indexes</th><th>export</th><th>drop</th><th>truncate</th><th>optimize</th><th>repair</th>]] or [[]],
   "</tr>\n"})
   tins(sqldr, tcon(headers))
@@ -228,7 +231,7 @@ function page_select(sth, q)
     for i, k in pairs(columns) do
       v = row[k]; more = [[]]
       if is_sht and i == 1 and not empty(v) then
-         vt = {[[<input type='checkbox' name='cb[]' value="`]], v, [[`"></td>]],
+         vt = {[[<input type="checkbox" name="cb[]" value="`]], v, [[`"></td>]],
          [[<td><a href="]], self, [[?conn=]], db_conn, [[&query=select+*+from+`]], v, [[`">]], v, [[</a></td>]],
          [[<td>&#183;<a href="]], self, [[?conn=]], db_conn, [[&query=show+create+table+`]], v, [[`">sct</a></td>]],
          [[<td>&#183;<a href="]], self, [[?conn=]], db_conn, [[&query=explain+`]], v, [[`">exp</a></td>]],
@@ -238,11 +241,11 @@ function page_select(sth, q)
          [[<td>&#183;<a href="]], self, [[?conn=]], db_conn, [[&query=truncate+table+`]], v, [[`" onclick='return ays()'>tr</a></td>]],
          [[<td>&#183;<a href="]], self, [[?conn=]], db_conn, [[&query=optimize+table+`]], v, [[`" onclick='return ays()'>opt</a></td>]],
          [[<td>&#183;<a href="]], self, [[?conn=]], db_conn, [[&query=repair+table+`]], v, [[`" onclick='return ays()'>rpr</a>]]}
-      --~ elseif not empty(is_shd) and i == 1 and not empty(v) then
-         --~ vt = {[[<a href="]], self, [[?conn=]] , v, [[&query=show+tables">]] , v, [[</a></td>]],
-         --~ [[<td><a href="]], self, [[?conn=]] , v, [[&query=show+create+database+`]] , v, [[`">scd</a></td>]],
-         --~ [[<td><a href="]], self, [[?conn=]] , v, [[&query=show+table+status">status</a></td>]],
-         --~ [[<td><a href="]], self, [[?conn=]] , v, [[&query=show+triggers">trig</a></td>]]}
+      elseif not empty(is_shd) and i == 1 and not empty(v) then
+         vt = {[[<a href="]], self, [[?conn=]] , db_conn, [[&query=show+tables">]] , v, [[</a></td>]],
+         [[<td><a href="]], self, [[?conn=]] , db_conn, [[&query=show+create+database+`]] , v, [[`">scd</a></td>]],
+         [[<td><a href="]], self, [[?conn=]] , db_conn, [[&query=show+table+status">status</a></td>]],
+         [[<td><a href="]], self, [[?conn=]] , db_conn, [[&query=show+triggers">trig</a></td>]]}
       else
         if v == nil then v = [[NULL]] end
         vt = {htmlspecialchars(v)}
@@ -276,7 +279,7 @@ function page()
         --~ do_import()
       elseif not empty(_REQUEST.dosht) then
         --~ do_sht()
-      elseif empty(_REQUEST.refresh) or not empty(preg_match([[^select|show|explain|desci]], SQLq, nil, nil, nil, [[i]])) then
+      elseif empty(_REQUEST.refresh) or not empty(preg_match([[^(select|show|explain|desci)]], SQLq, nil, nil, nil, [[i]])) then
         do_sql(SQLq) -- perform non-selet SQL only if not refresh (to avoid dangerous delete/drop)
       end
     else
@@ -342,14 +345,14 @@ function do_sql(q)
   else
     if not empty(last_sth) and not empty(last_sql) then
       SQLq = last_sql
-      if not empty(preg_match([[^select|show|explain|desc]], last_sql, nil, nil, nil, [[i]])) then
+      if not empty(preg_match([[^(select|show|explain|desc)]], last_sql, nil, nil, nil, [[i]])) then
         if q ~= last_sql then out_message = [[Results of the last select displayed:]] end
         page_select(last_sth, last_sql)
       else
         reccount = last_sth:affected()
         out_message = [[Done.]]
-        if not empty(preg_match([[^insert|replace]], last_sql, nil, nil, nil, [[i]])) then out_message = out_message .. [[ Last inserted id = ]] .. get_identity() end
-        if not empty(preg_match([[^drop|truncate]], last_sql, nil, nil, nil, [[i]])) then do_sql([[show tables]]) end
+        if not empty(preg_match([[^(insert|replace)]], last_sql, nil, nil, nil, [[i]])) then out_message = out_message .. [[ Last inserted id = ]] .. get_identity() end
+        if not empty(preg_match([[^(drop|truncate)]], last_sql, nil, nil, nil, [[i]])) then do_sql([[show tables]]) end
       end
     end
   end
@@ -473,7 +476,7 @@ function do_one_sql(sql)
   sql = preg_replace([[;$]], [[]], sql)
   if not empty(sql) then
     last_sql = sql; is_limited_sql = 0
-    if not empty(preg_match([[^select]], sql, nil, nil, nil, [[i]])) and empty(preg_match([[limit +\d+]], sql, nil, nil, nil, [[i]])) then
+    if not empty(preg_match([[^(select)]], sql, nil, nil, nil, [[i]])) and empty(preg_match([[limit +\d+]], sql, nil, nil, nil, [[i]])) then
       offset = page_ * MAX_ROWS_PER_PAGE
       sql = sql .. [[ LIMIT ]] .. offset .. [[,]] .. MAX_ROWS_PER_PAGE
       is_limited_sql = 1
