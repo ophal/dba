@@ -13,7 +13,7 @@ the Nutria[3] project.
 
 [1] http://ophal.org
 [2] http://phpminiadmin.sourceforge.net
-[3] http://gitorious.org/nutria
+[3] http://github.com/nutria
 
 
 == II. Roadmap ==
@@ -37,9 +37,9 @@ the Nutria[3] project.
   DBA module uses extra Seawolf and Lua libraries, you need to add them
   manually to the sandbox in 'settings.lua', to do so just add following lines:
 
-  env.seawolf_text_preg = require [[seawolf.text.preg]]
-  env.microtime = seawolf.calendar.microtime
-  env.math = math
+  env.preg_match = require 'seawolf.text.preg'.match
+  env.preg_replace = require 'seawolf.text.preg'.match
+  env.microtime = require 'seawolf.calendar'.microtime
 
   In order to customize the option MAX_ROWS_PER_PAGE just add the
   following to your settings.lua:

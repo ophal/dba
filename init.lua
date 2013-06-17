@@ -14,8 +14,8 @@ local debug, settings, unpack = debug, settings, unpack
 local tins, tcon, slen = table.insert, table.concat, string.len
 local trim, microtime = seawolf.text.trim, microtime
 local explode, substr = seawolf.text.explode, seawolf.text.substr
-local preg_match, strlen = seawolf_text_preg.match, string.len
-local preg_replace = seawolf_text_preg.replace
+local preg_match, strlen = preg_match, string.len
+local preg_replace = preg_replace
 local str_replace = seawolf.text.str_replace
 local htmlspecialchars = seawolf.text.htmlspecialchars
 local PREG_OFFSET_CAPTURE = 256
@@ -142,7 +142,7 @@ function page_header()
 <input type="hidden" name="p" value="">
 
 <div class="inv">
-<a href="http://gitorious.org/ophal/dba" target="_blank"><b>DBA %s</b></a>
+<a href="http://github.com/ophal/dba" target="_blank"><b>DBA %s</b></a>
 |
 Connections: %s
 ]]):format(base_path, ophal.modules.dba.version, get_conn_select(db_conn), base_path))
@@ -332,7 +332,7 @@ function page_footer()
 <br/>
 
 <div align="right">
-<small>Powered by <a href="http://gitorious.org/ophal/dba" target="_blank">DBA</a></small>
+<small>Powered by <a href="http://github.com/ophal/dba" target="_blank">DBA</a></small>
 </div>
 ]]
 end
