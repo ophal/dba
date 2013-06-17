@@ -13,7 +13,7 @@ the Nutria[3] project.
 
 [1] http://ophal.org
 [2] http://phpminiadmin.sourceforge.net
-[3] http://github.com/nutria
+[3] http://gitorious.org/nutria
 
 
 == II. Roadmap ==
