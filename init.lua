@@ -330,10 +330,6 @@ function page_footer()
 </form>
 <br/>
 <br/>
-
-<div align="right">
-<small>Powered by <a href="http://github.com/ophal/dba" target="_blank">DBA</a></small>
-</div>
 ]]
 end
 
